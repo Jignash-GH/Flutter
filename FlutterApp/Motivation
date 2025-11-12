@@ -1,0 +1,53 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:math';
+
+void main() => runApp(MaterialApp(home: UtilityHub()));
+
+class UtilityHub extends StatefulWidget {
+  @override
+  _UtilityHubState createState() => _UtilityHubState();
+}
+
+class _UtilityHubState extends State<UtilityHub> {
+  bool dark = false;
+  String quote = "Tap for quote!";
+  String time = "";
+  final quotes = [
+    "Keep going!",
+    "Dream big.",
+    "Stay curious.",
+    "Be consistent.",
+    "Focus matters."
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(Duration(seconds: 1),
+        (_) => setState(() => time = DateTime.now().toLocal().toString().substring(11, 19)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(brightness: dark ? Brightness.dark : Brightness.light),
+      home: Scaffold(
+        appBar: AppBar(
+            title: Text("Utility Hub"),
+            actions: [Switch(value: dark, onChanged: (v) => setState(() => dark = v))]),
+        body: Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(time, style: TextStyle(fontSize: 25)),
+            SizedBox(height: 15),
+            Text(quote, textAlign: TextAlign.center, style: TextStyle(fontSize: 18)),
+            ElevatedButton(
+                onPressed: () =>
+                    setState(() => quote = quotes[Random().nextInt(quotes.length)]),
+                child: Text("New Quote"))
+          ]),
+        ),
+      ),
+    );
+  }
+}
