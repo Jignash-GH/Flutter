@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+void main() => runApp(EmergencyAssist());
+
+class EmergencyAssist extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(primarySwatch: Colors.red),
+        home: EmergencyHome(),
+      );
+}
+
+class EmergencyHome extends StatefulWidget {
+  @override
+  State<EmergencyHome> createState() => _EmergencyHomeState();
+}
+
+class _EmergencyHomeState extends State<EmergencyHome> {
+  String customNumber = '';
+
+  void callNumber(String number) async {
+    final uri = Uri.parse('tel:$number');
+    if (await canLaunchUrl(uri)) await launchUrl(uri);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.network(
+                'https://media.istockphoto.com/id/695100728/vector/vector-background-with-blurred-objects-abstraction-in-gray.jpg?s=612x612&w=0&k=20&c=QG_1GxXUvuF6q_tnnPXn-CV1GQdgCBkqONZSKaURafE=', 
+                fit: BoxFit.cover,
+              ),
+            ),
+            Container(
+              // Fix: Replaced .withOpacity() with Color.fromARGB() as suggested by the error message.
+              // 0.45 opacity for black (RGB 0,0,0) means an alpha of (0.45 * 255) = 114.75, rounded to 115.
+              color: Color.fromARGB(115, 0, 0, 0),
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Emergency Assist',
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  SizedBox(height: 30),
+                  emergencyButton('🚓 Police', '100'),
+                  emergencyButton('🚑 Ambulance', '108'),
+                  emergencyButton('🔥 Fire', '101'),
+                  SizedBox(height: 25),
+                  TextField(
+                    keyboardType: TextInputType.phone,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Custom Number',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    onChanged: (v) => customNumber = v,
+                  ),
+                  SizedBox(height: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                    ),
+                    onPressed: () {
+                      if (customNumber.isNotEmpty) callNumber(customNumber);
+                    },
+                    child: Text('Call Custom'),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+
+  Widget emergencyButton(String label, String number) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: ElevatedButton.icon(
+          icon: Icon(Icons.call, color: Colors.white),
+          label: Text('$label ($number)',
+              style: TextStyle(fontSize: 18, color: Colors.white)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.redAccent,
+            minimumSize: Size(double.infinity, 50),
+          ),
+          onPressed: () => callNumber(number),
+        ),
+      );
+}
